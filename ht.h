@@ -300,7 +300,8 @@ const HASH_INDEX_T HashTable<K,V,Prober,Hash,KEqual>::CAPACITIES[] =
 template<typename K, typename V, typename Prober, typename Hash, typename KEqual>
 HashTable<K,V,Prober,Hash,KEqual>::HashTable(
     double resizeAlpha, const Prober& prober, const Hasher& hash, const KEqual& kequal)
-       :  hash_(hash), kequal_(kequal), prober_(prober)
+       :  hash_(hash), kequal_(kequal), prober_(prober), resizeAlpha_(resizeAlpha),
+       numItems_(0), numDeleted_(0)
 {
     // Initialize any other data members as necessary
     mIndex_ = 0;
@@ -338,8 +339,7 @@ size_t HashTable<K,V,Prober,Hash,KEqual>::size() const
 template<typename K, typename V, typename Prober, typename Hash, typename KEqual>
 void HashTable<K,V,Prober,Hash,KEqual>::insert(const ItemType& p)
 {
-    double currentLoad = static_cast<double>(this->size()) / static_cast<double>(CAPACITIES[mIndex_]);
-
+    double currentLoad = static_cast<double> (numItems_ + numDeleted_) / CAPACITIES[mIndex_];
     if(currentLoad >= resizeAlpha_)
     {
         resize();
@@ -460,7 +460,6 @@ typename HashTable<K,V,Prober,Hash,KEqual>::HashItem* HashTable<K,V,Prober,Hash,
 template<typename K, typename V, typename Prober, typename Hash, typename KEqual>
 void HashTable<K,V,Prober,Hash,KEqual>::resize()
 {
-    mIndex_++; 
     if(mIndex_ >= sizeof(CAPACITIES)/sizeof(CAPACITIES[0]) - 1)
     {
         throw std::logic_error("no more capacity sizes available for resize()");
