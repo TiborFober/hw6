@@ -277,7 +277,7 @@ private:
 
     // ADD MORE DATA MEMBERS HERE, AS NECESSARY
     double resizeAlpha_;
-    size_t numItems;
+    size_t numItems_;
     size_t numDeleted_;
 
 
@@ -354,7 +354,7 @@ void HashTable<K,V,Prober,Hash,KEqual>::insert(const ItemType& p)
 
     if(table_[loc] == nullptr)
     {
-      table_[loc] = newHashItem(p);
+      table_[loc] = new HashItem(p);
       numItems_++;
     }
     else if( !table_[loc]->deleted)
